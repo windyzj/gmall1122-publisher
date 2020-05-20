@@ -4,6 +4,7 @@ import com.atguigu.gmall1122.publisher.service.EsService;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
+import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -20,6 +21,11 @@ import java.util.Map;
 @Service
 public class EsServiceImpl implements EsService {
 
+
+    public static void main(String[] args) {
+        new EsServiceImpl().getDauTotal("2020-05-14");
+    }
+
     @Autowired
     JestClient jestClient;
 
@@ -35,7 +41,9 @@ public class EsServiceImpl implements EsService {
         Long total=0L;
         try {
             SearchResult searchResult = jestClient.execute(search);
-            total = searchResult.getTotal();
+            if(searchResult.getTotal()!=null){
+                total = searchResult.getTotal();
+            }
         } catch (IOException e) {
             e.printStackTrace();
             throw  new RuntimeException("查询ES异常");
@@ -60,9 +68,11 @@ public class EsServiceImpl implements EsService {
         Map aggsMap=new HashMap();
         try {
             SearchResult searchResult = jestClient.execute(search);
-            List<TermsAggregation.Entry> buckets = searchResult.getAggregations().getTermsAggregation("groupby_hr").getBuckets();
-            for (TermsAggregation.Entry bucket : buckets) {
-                aggsMap.put(  bucket.getKey(),bucket.getCount());
+            if(searchResult.getAggregations().getTermsAggregation("groupby_hr")!=null){
+                List<TermsAggregation.Entry> buckets = searchResult.getAggregations().getTermsAggregation("groupby_hr").getBuckets();
+                for (TermsAggregation.Entry bucket : buckets) {
+                    aggsMap.put(  bucket.getKey(),bucket.getCount());
+                }
             }
 
         } catch (IOException e) {

@@ -1,6 +1,7 @@
 package com.atguigu.gmall1122.publisher.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.atguigu.gmall1122.publisher.service.EsService;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +41,8 @@ public class PublisherController {
     }
 
     @GetMapping("realtime-hour")
-    public String realtimeHour(@RequestParam("id") String id ,@RequestParam("date") String dt ){
-        if("dau".equals(id)){
+    public String realtimeHour(@RequestParam(value = "id",defaultValue ="-1" ) String id ,@RequestParam("date") String dt ){
+        if(id.equals("dau")){
             Map<String,Map> hourMap=new HashMap<>();
             Map dauHourTdMap = esService.getDauHour(dt);
             hourMap.put("today",dauHourTdMap);
@@ -67,6 +68,26 @@ public class PublisherController {
         return yd;
     }
 
+
+    @GetMapping("test")
+    public String test(){
+        return "hello world";
+    }
+
+    @GetMapping("area")
+    public String area(){
+        List list=new ArrayList();
+        JSONObject hb = new JSONObject();
+        hb.put("area_id","420000" );
+        hb.put("value",500000 );
+        JSONObject hlj = new JSONObject();
+        hlj.put("area_id","230000" );
+        hlj.put("value",300000 );
+
+        list.add(hb);
+        list.add(hlj);
+        return JSON.toJSONString(list);
+    }
 
 
 }
